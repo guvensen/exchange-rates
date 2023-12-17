@@ -24,4 +24,27 @@ class UserService
             'message' => "The user has been created successfully."
         ], 201);
     }
+
+    public function logs($id)
+    {
+        $user = User::with('logs')->find($id);
+        $i = 0;
+        $logs = [];
+
+        if(!$user){
+            return response()->json([
+                'message' => "User not found."
+            ], 404);
+        }
+
+        foreach ($user->logs as $log){
+            $logs[$i]['log_type'] = $log->log_type;
+            $logs[$i]['endpoint'] = $log->endpoint;
+            $logs[$i]['ip'] = $log->ip;
+            $logs[$i]['created_at'] = $log->created_at;
+            $i++;
+        }
+
+        return response()->json($logs);
+    }
 }

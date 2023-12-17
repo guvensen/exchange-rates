@@ -29,4 +29,9 @@ class UserController extends Controller
 
         return $userService->register($name, $email, $password);
     }
+
+    public function logs($id, UserService $userService)
+    {
+        return $userService->logs($id);
+    }
 }
