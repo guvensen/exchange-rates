@@ -25,9 +25,9 @@ class UserService
         ], 201);
     }
 
-    public function logs($id)
+    public function logs($email)
     {
-        $user = User::with('logs')->find($id);
+        $user = User::with('logs')->where('email', $email)->first();
         $i = 0;
         $logs = [];
 

@@ -18,15 +18,18 @@ use App\Http\Controllers\AuthController;
 */
 
 Route::middleware('audit')->group(function () {
+    Route::get('/', function (){
+        return "An Exchange Rates API";
+    });
     Route::post('/user', [UserController::class, 'register']);
     Route::post('/auth/login', [AuthController::class, 'login']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::middleware('auth:sanctum')->group(function () {
         //Route::get('/get-currency-data', [CurrencyRateController::class, 'index']);
+        Route::get('/currency/convert', [CurrencyRateController::class, 'convert']);
+        Route::get('/currency/rate/{code}', [CurrencyRateController::class, 'getCurrencyRateByCode']);
         Route::get('/currency/{code}', [CurrencyRateController::class, 'getCurrencyByCode']);
-        Route::get('/currency-rate/{code}', [CurrencyRateController::class, 'getCurrencyRateByCode']);
-        Route::get('/convert', [CurrencyRateController::class, 'convert']);
-        Route::get('/user/{id}/logs', [UserController::class, 'logs']);
+        Route::get('/user/logs', [UserController::class, 'logs']);
     });
 });
