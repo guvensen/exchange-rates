@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CurrencyRateController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,13 +17,13 @@ use App\Http\Controllers\CurrencyRateController;
 |
 */
 
+Route::post('/user', [UserController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/logout', [AuthController::class, 'logout']);
 
-Route::get('/get-currency-data', [CurrencyRateController::class, 'index']);
-Route::get('/currency/{code}', [CurrencyRateController::class, 'getCurrencyByCode']);
-Route::get('/currency-rate/{code}', [CurrencyRateController::class, 'getCurrencyRateByCode']);
-Route::get('/convert', [CurrencyRateController::class, 'convert']);
-
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:sanctum')->group(function () {
+    //Route::get('/get-currency-data', [CurrencyRateController::class, 'index']);
+    Route::get('/currency/{code}', [CurrencyRateController::class, 'getCurrencyByCode']);
+    Route::get('/currency-rate/{code}', [CurrencyRateController::class, 'getCurrencyRateByCode']);
+    Route::get('/convert', [CurrencyRateController::class, 'convert']);
 });
