@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    ports:
+      - 3306:3306
+    command: "--default-authentication-plugin=mysql_native_password"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root_password"
+      MYSQL_USER: "user"
+      MYSQL_PASSWORD: "user_password"
+      MYSQL_HOST: "mysql"
+    volumes:
+      - mysql-data:/var/lib/mysql/
+      - mysql-log:/var/log/mysql/
+      - mysql-conf:/etc/mysql/
+      - /etc/localtime:/etc/localtime:ro # Sync container and host machine datetime.
+    networks:
+      - backend
+    hostname: mysql
+    healthcheck:
+      test: ["CMD", 'mysqladmin', 'ping', '-h', 'localhost', '-u', 'root', '-p$$MYSQL_ROOT_PASSWORD']
+      timeout: 5s
+      retries: 1
+volumes:
+  mysql-data:
+    external: true
+  mysql-log:
+    external: true
+  mysql-conf:
+    external: true
+networks:
+  backend:
+    external: true
