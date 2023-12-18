@@ -8,23 +8,23 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthService
 {
-    public function login(string $email, string $password)
+    public function login(string $email, string $password): object
     {
         $user = Auth::attempt(['email' => $email, 'password' => $password]);
 
-        if(!$user){
+        if (!$user) {
             return response()->json([
                 'message' => "Email or password is incorrect"
             ], 403);
-        }else{
-            if(!PersonalAccessToken::where('tokenable_id', auth()->id())->first()){
+        } else {
+            if (!PersonalAccessToken::where('tokenable_id', auth()->id())->first()) {
                 $token = Auth::getUser()->createToken('accessToken');
                 $token = explode("|", $token->plainTextToken);
 
                 return response()->json([
                     'token' => $token[1]
                 ], 200);
-            }else{
+            } else {
                 return response()->json([
                     'message' => "You already have an access token. If you lost the token, logout and get a new token."
                 ], 200);
@@ -32,15 +32,15 @@ class AuthService
         }
     }
 
-    public function logout($email, $password)
+    public function logout(string $email, string $password): object
     {
         $user = Auth::attempt(['email' => $email, 'password' => $password]);
 
-        if(!$user){
+        if (!$user) {
             return response()->json([
                 'message' => "Email or password is incorrect"
             ], 403);
-        }else{
+        } else {
             auth()->user()->tokens()->delete();
             return response()->json([
                 'message' => "The access token has been deleted."

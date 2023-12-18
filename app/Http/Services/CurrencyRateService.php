@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Services;
+
 use App\Models\CurrencyConvert;
 use Illuminate\Http\Response;
-use App\Models\CurrencyRate AS CurrencyRate;
+use App\Models\CurrencyRate as CurrencyRate;
 
 
 class CurrencyRateService
@@ -18,7 +19,7 @@ class CurrencyRateService
         $this->apiUrl = config('currencyrate.api_url');
     }
 
-    public function apiRequest($method, $endPoint)
+    public function apiRequest(string $method, string $endPoint): array
     {
         $client = new \GuzzleHttp\Client([
             'base_uri' => $this->apiUrl
@@ -58,32 +59,31 @@ class CurrencyRateService
                 "BGN" => $rates->BGN
             ];
 
-            foreach ($arr as $key => $value){
+            foreach ($arr as $key => $value) {
                 CurrencyRate::where('code', $key)->update([
-                    'rate'  => $value
+                    'rate' => $value
                 ]);
             }
-
-        }else{
+        } else {
             return response()->json([
                 'message' => "Exchange rate service unavailable."
             ], 503);
         }
     }
 
-    public function getConvertData($from, $to, $amount = 1): float
+    public function getConvertData(string $from, string $to, float $amount = 1): float
     {
-        $endPoint = "convert?from=".$from."&to=".$to."&amount=".$amount;
+        $endPoint = "convert?from=" . $from . "&to=" . $to . "&amount=" . $amount;
         $apiRequest = self::apiRequest('GET', $endPoint);
         $statusCode = $apiRequest["statusCode"];
         $body = json_decode($apiRequest["data"]);
 
-        if($statusCode === 200){
+        if ($statusCode === 200) {
             CurrencyConvert::updateOrCreate(
                 ["from" => $from, "to" => $to],
                 ["value" => floatval($body->value), "updated_at" => date("Y-m-d H:i:s")]
             );
-        }else{
+        } else {
             return response()->json([
                 'message' => "Exchange rate service unavailable."
             ], 503);
@@ -92,63 +92,64 @@ class CurrencyRateService
         return $body->value;
     }
 
-    public function getCurrencyByCode($code): object
+    public function getCurrencyByCode(string $code): object
     {
         $code = strtoupper($code);
         $currency = CurrencyRate::where('code', $code)->first();
 
-        if(in_array($code, $this->supportedCurrencies)){
+        if (in_array($code, $this->supportedCurrencies)) {
             return response()->json([
                 "code" => $currency["code"],
                 "name" => $currency["name"],
                 "symbol" => $currency["symbol"],
                 "rate" => $currency["rate"],
             ]);
-        }else{
+        } else {
             return response()->json([
                 'message' => "Forwarded unsupported currency."
             ], 416);
         }
     }
 
-    public function getCurrencyRateByCode($code): object
+    public function getCurrencyRateByCode(string $code): object
     {
         $code = strtoupper($code);
         $currency = CurrencyRate::where('code', $code)->first();
 
-        if(in_array($code, $this->supportedCurrencies)){
+        if (in_array($code, $this->supportedCurrencies)) {
             return response()->json([
                 'rate' => $currency["rate"]
             ]);
-        }else{
+        } else {
             return response()->json([
                 'message' => "Forwarded unsupported currency."
             ], 416);
         }
     }
 
-    public function convert($from, $to, $amount){
+    public function convert(string $from, string $to, float $amount): object
+    {
         $from = strtoupper($from);
         $to = strtoupper($to);
         $amount = $amount ? floatval($amount) : 1;
 
-        if(in_array($from, $this->supportedCurrencies) && in_array($to, $this->supportedCurrencies)){
+        if (in_array($from, $this->supportedCurrencies) && in_array($to, $this->supportedCurrencies)) {
             $currency = CurrencyConvert::where([["from", $from], ["to", $to]])->first();
 
             $now = strtotime(date("Y-m-d H:i:s"));
-            $lastUpdate = $currency? strtotime($currency["updated_at"]) : 0;
+            $lastUpdate = $currency ? strtotime($currency["updated_at"]) : 0;
             $updateDiff = ($now - $lastUpdate) / 60;
 
-            if ($currency && $updateDiff < 15){
+            if ($currency && $updateDiff < 15) {
                 $value = $currency["value"];
-            }else{
-                $value =  self::getConvertData($from, $to);
+            } else {
+                $value = self::getConvertData($from, $to);
             }
 
             return response()->json([
-                'value' => $value*$amount
+                'value' => $value * $amount
             ]);
-        }else{
+        } else {
             return response()->json([
                 'message' => "Forwarded unsupported currency."
             ], 416);

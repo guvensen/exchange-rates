@@ -7,14 +7,14 @@ use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    public function register(string $name, string $email, string $password)
+    public function register(string $name, string $email, string $password): object
     {
         $user = new User();
         $user->name = $name;
         $user->email = $email;
         $user->password = Hash::make($password);;
 
-        if(!$user->save()){
+        if (!$user->save()) {
             return response()->json([
                 'message' => "Failed to register user."
             ], 400);
@@ -25,19 +25,19 @@ class UserService
         ], 201);
     }
 
-    public function logs($email)
+    public function logs(string $email): object
     {
         $user = User::with('logs')->where('email', $email)->first();
         $i = 0;
         $logs = [];
 
-        if(!$user){
+        if (!$user) {
             return response()->json([
                 'message' => "User not found."
             ], 404);
         }
 
-        foreach ($user->logs as $log){
+        foreach ($user->logs as $log) {
             $logs[$i]['log_type'] = $log->log_type;
             $logs[$i]['endpoint'] = $log->endpoint;
             $logs[$i]['ip'] = $log->ip;

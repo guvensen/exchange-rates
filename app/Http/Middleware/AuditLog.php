@@ -12,8 +12,8 @@ class AuditLog
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse) $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function handle(Request $request, Closure $next)
@@ -22,28 +22,28 @@ class AuditLog
         $fullUrl = $request->fullUrl();
         $host = $request->schemeAndHttpHost();
         $ip = $request->ip();
-        $path = str_replace($host,"",$url);
-        $fullPath = str_replace($host,"",$fullUrl);
+        $path = str_replace($host, "", $url);
+        $fullPath = str_replace($host, "", $fullUrl);
         $useId = $request->user() ? $request->user()->id : null;
         $logType = 'currency';
         $logDetail = [];
 
-        switch ($path){
+        switch ($path) {
             case "/api/auth/login":
                 $logType = "login";
                 $logDetail["email"] = $request->input("email");
-                $user = User::where('email',$request->input("email"))->first();
+                $user = User::where('email', $request->input("email"))->first();
 
-                if($user){
+                if ($user) {
                     $useId = $user->id;
                 }
                 break;
             case "/api/auth/logout":
                 $logType = "logout";
                 $logDetail["email"] = $request->input("email");
-                $user = User::where('email',$request->input("email"))->first();
+                $user = User::where('email', $request->input("email"))->first();
 
-                if($user){
+                if ($user) {
                     $useId = $user->id;
                 }
                 break;

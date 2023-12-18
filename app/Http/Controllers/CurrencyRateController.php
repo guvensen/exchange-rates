@@ -8,19 +8,23 @@ use Illuminate\Http\Request as Request;
 class CurrencyRateController extends Controller
 {
 
-    public function index(CurrencyRateService $currencyRateService){
+    public function index(CurrencyRateService $currencyRateService)
+    {
         return $currencyRateService->getCurrencyRateData();
     }
 
-    public function getCurrencyByCode($code, CurrencyRateService $currencyRateService){
+    public function getCurrencyByCode(string $code, CurrencyRateService $currencyRateService)
+    {
         return $currencyRateService->getCurrencyByCode($code);
     }
 
-    public function getCurrencyRateByCode($code, CurrencyRateService $currencyRateService){
+    public function getCurrencyRateByCode(string $code, CurrencyRateService $currencyRateService)
+    {
         return $currencyRateService->getCurrencyRateByCode($code);
     }
 
-    public function convert(Request $request, CurrencyRateService $currencyRateService){
+    public function convert(Request $request, CurrencyRateService $currencyRateService)
+    {
         $from = $request->input('from');
         $to = $request->input('to');
         $amount = $request->input('amount');
