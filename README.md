@@ -1,8 +1,5 @@
 # An Exchange Rates API
 
-## About 
-The base currency is USD.
-
 ## Currencies Supported
 | Code  | Name            | Symbol  |
 |-------|-----------------|---------|
@@ -13,9 +10,13 @@ The base currency is USD.
 | BGN   | Bulgarian Lev   | лв      |
 
 
-## Sample Project
+## Swagger Documentation
 
-[Link](https://exchange-rates.guvensen.com/api)
+[Documentation](https://exchange-rates.guvensen.com/api/swagger)
+
+## API Url
+
+[API Url](https://exchange-rates.guvensen.com/api)
 
 
 ## Endpoints
