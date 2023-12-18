@@ -9,6 +9,38 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/user",
+     *     tags={"User"},
+     *     summary="Create a new user",
+     *     @OA\RequestBody(
+     *      required=true,
+     *      @OA\MediaType(
+     *        mediaType="application/json",
+     *        @OA\Schema(
+     *          @OA\Property(
+     *             property="name",
+     *             description="Name of the user.",
+     *             type="string",
+     *           ),
+     *          @OA\Property(
+     *            property="email",
+     *            description="Email address of the user.",
+     *            type="string",
+     *          ),
+     *          @OA\Property(
+     *            property="password",
+     *            description="Password of the user.",
+     *            type="string",
+     *          ),
+     *        ),
+     *      ),
+     *    ),
+     *     @OA\Response(response=200, description="Successful operation"),
+     *     @OA\Response(response=400, description="Invalid request")
+     * )
+     */
     public function register(Request $request, UserService $userService)
     {
         $name = $request->input('name');
@@ -30,6 +62,25 @@ class UserController extends Controller
         return $userService->register($name, $email, $password);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/user/logs",
+     *     summary="Get user audit log",
+     *     security={{"bearer_token":{}}},
+     *     tags={"User"},
+     *     @OA\Parameter(
+     *        in="query",
+     *        required=true,
+     *        name="email",
+     *        description="User's e-mail address",
+     *        @OA\Schema(
+     *          type="string"
+     *       ),
+     *    ),
+     *     @OA\Response(response=200, description="Successful operation"),
+     *     @OA\Response(response=400, description="Invalid request")
+     * )
+     */
     public function logs(Request $request, UserService $userService)
     {
         $email = $request->input('email');
